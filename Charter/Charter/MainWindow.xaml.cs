@@ -19,6 +19,7 @@ using System.Windows.Controls;
 using LiveCharts;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace Charter
 {
@@ -102,10 +103,88 @@ namespace Charter
             YFormatter = val => val.ToString("N") + " M";
 
             DataContext = this;
+
+            foreach (var series in SeriesCollection)
+            {
+                foreach(DateTimePoint datapoint in series.Values)
+                {
+                    var x = datapoint.DateTime;
+                    var y = datapoint.Value;
+                }
+
+            }
+            ExportToExcel();
+        }
+
+
+        public void ExportToExcel()
+        {
+            Excel.Application xlApp;
+            Excel.Workbook xlWorkBook;
+            Excel.Worksheet xlWorkSheet;
+            object misValue = System.Reflection.Missing.Value;
+
+            xlApp = new Excel.Application();
+            xlWorkBook = xlApp.Workbooks.Add(misValue);
+            xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+
+            //add data 
+            for (int i=0;i<SeriesCollection.Count;i++)
+            {
+                xlWorkSheet.Cells[1, i + 2] = SeriesCollection[i].Title;
+                for (int j=0;j<SeriesCollection[i].Values.Count;j++)
+                {
+                    if (i==0)
+                    {
+                        xlWorkSheet.Cells[j + 2, i + 1] = (SeriesCollection[i].Values[j] as DateTimePoint).DateTime;
+                    }
+                    xlWorkSheet.Cells[j + 2, i + 2] = (SeriesCollection[i].Values[j] as DateTimePoint).Value;
+                }
+            }
+
+            Excel.Range chartRange;
+
+            Excel.ChartObjects xlCharts = (Excel.ChartObjects)xlWorkSheet.ChartObjects(Type.Missing);
+            Excel.ChartObject myChart = (Excel.ChartObject)xlCharts.Add(10, 80, 300, 250);
+            Excel.Chart chartPage = myChart.Chart;
+
+            chartRange = xlWorkSheet.get_Range("A1", "e9");
+            chartPage.SetSourceData(chartRange, misValue);
+            chartPage.ChartType = Excel.XlChartType.xlAreaStacked;
+
+            xlWorkBook.SaveAs("c:\\temp\\csharp.net-informations.xls", Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+            xlWorkBook.Close(true, misValue, misValue);
+            xlApp.Quit();
+
+            releaseObject(xlWorkSheet);
+            releaseObject(xlWorkBook);
+            releaseObject(xlApp);
+
+            MessageBox.Show("Excel file created , you can find the file c:\\csharp.net-informations.xls");
+        }
+
+        private void releaseObject(object obj)
+        {
+            try
+            {
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(obj);
+                obj = null;
+            }
+            catch (Exception ex)
+            {
+                obj = null;
+                MessageBox.Show("Exception Occured while releasing object " + ex.ToString());
+            }
+            finally
+            {
+                GC.Collect();
+            }
         }
 
         public SeriesCollection SeriesCollection { get; set; }
         public Func<double, string> XFormatter { get; set; }
         public Func<double, string> YFormatter { get; set; }
+
+       
     }
 }
