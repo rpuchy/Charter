@@ -6,9 +6,26 @@
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         xmlns:local="clr-namespace:Charter"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="500" Width="800">
     <Grid>
-        <lvc:CartesianChart Grid.Row="2" Series="{Binding SeriesCollection}"  LegendLocation="Right">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100*"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="100*"/>
+            </Grid.RowDefinitions>
+            <ListView x:Name="AllInputs" Grid.Row="0" ItemsSource="{Binding AllItems}"></ListView>
+            <Button Grid.Row="1" Click="Button_Click"/>
+            <ListView Grid.Row="2" ItemsSource="{Binding ChartItems}"></ListView>
+        </Grid>
+        <GridSplitter ResizeBehavior="PreviousAndNext"  Grid.Row="0" Grid.Column="1" Margin="2,0,2,0" Width="4" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+
+        <lvc:CartesianChart Grid.Row="0" Grid.Column="2" Series="{Binding SeriesCollection}"  LegendLocation="Right" HorizontalAlignment="Stretch" Width="auto" Height="auto" VerticalAlignment="Stretch">
             <lvc:CartesianChart.AxisX>
                 <lvc:Axis Title="Year" LabelFormatter="{Binding XFormatter}"></lvc:Axis>
             </lvc:CartesianChart.AxisX>
@@ -16,5 +33,7 @@
                 <lvc:Axis Title="Population" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
             </lvc:CartesianChart.AxisY>
         </lvc:CartesianChart>
+        
+        
     </Grid>
 </Window>
