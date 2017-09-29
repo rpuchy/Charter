@@ -20,8 +20,16 @@
                 <RowDefinition Height="100*"/>
             </Grid.RowDefinitions>
             <ListView x:Name="AllInputs" Grid.Row="0" ItemsSource="{Binding AllItems}"></ListView>
-            <Button Grid.Row="1" Click="Button_Click"/>
-            <ListView Grid.Row="2" ItemsSource="{Binding ChartItems}"></ListView>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50*"/>
+                    <ColumnDefinition Width="50*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Click="Button_Click" Content="Add" />
+                <Button Grid.Column="1" Click="ButtonBase_OnClick" Content="Remove"/>
+            </Grid>
+            
+            <ListView x:Name="ChartInputs" Grid.Row="2" ItemsSource="{Binding ChartItems}"></ListView>
         </Grid>
         <GridSplitter ResizeBehavior="PreviousAndNext"  Grid.Row="0" Grid.Column="1" Margin="2,0,2,0" Width="4" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
 

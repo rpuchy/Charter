@@ -37,7 +37,7 @@ namespace Charter
         public MainWindow()
         {
             InitializeComponent();
-            AllItems = new ObservableCollection<string>() { "Item1", "item2" };
+            AllItems = new ObservableCollection<string>() { "Item1", "Item2" };
             ChartItems = new ObservableCollection<string>();
             ChartItems.CollectionChanged += ChartItems_CollectionChanged;
             SeriesCollection = new SeriesCollection
@@ -143,7 +143,7 @@ namespace Charter
                 foreach (string item in e.NewItems)
                 {
                     double[] data;
-                    if (item == "item1")
+                    if (item == "Item1")
                     {
                         data = Item1;
                     }
@@ -151,12 +151,18 @@ namespace Charter
                     {
                         data = Item2;
                     }
-                    var series = new StackedAreaSeries
+                    var series = new LineSeries()
                     {
-                        Title = "Europe",
-                        LineSmoothness = 0,
+                        Title = item,
+                        LineSmoothness = 1,
+                        Fill = Brushes.Transparent,
+                        //Stroke = Brushes.Black,
+                        StrokeThickness = 2,
+                        //StackMode = StackMode.Values,
+                        
                         Values = new ChartValues<DateTimePoint>()
                     };
+                    
                     series.Values.AddRange(data.Select((x, i) => new DateTimePoint(new DateTime(2000 + i, 1, 1), x)));
                     SeriesCollection.Add(series);
                 }
@@ -236,7 +242,16 @@ namespace Charter
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            if (AllInputs.SelectedIndex == -1) return;
             ChartItems.Add(AllInputs.SelectedItem.ToString());
+            AllItems.Remove(AllInputs.SelectedItem.ToString());
+        }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (ChartInputs.SelectedIndex == -1) return;
+            AllItems.Add(ChartInputs.SelectedItem.ToString());
+            ChartItems.Remove(ChartInputs.SelectedItem.ToString());
         }
     }
 }
