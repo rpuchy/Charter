@@ -100,11 +100,15 @@ namespace Charter
 
                 double[] datainfo = data[item].ToArray();
                 AllItems.Remove(item);
-                var series = new LineSeries()
+                var series = new AreaSeries()
                 {
                     Title = item,
                     //Stroke = Brushes.Black,
-                    StrokeThickness = 2,
+                    LineStyle = OxyPlot.LineStyle.Solid,
+                    Color = OxyColors.Blue,
+                    Color2 = OxyColors.Yellow,
+                    Fill = OxyColor.FromRgb(214, 231, 242),
+                     
                     //StackMode = StackMode.Values,
                 };
 
@@ -213,14 +217,22 @@ namespace Charter
                 foreach (string item in e.NewItems)
                 {
                     double[] datainfo = data[item].ToArray();
-                    var series = new LineSeries()
+                    var series = new AreaSeries()
                     {
                         Title = item,
-                        
+                        Fill = Model.Series.Count ==0 ?  OxyColors.Transparent : OxyColors.Blue,
+                        Color = OxyColors.Black
                     };
                     
 
                     series.Points.AddRange(datainfo.Select((x, i) => new DataPoint(i, x)));
+                    if (Model.Series.Count>0)
+                    {
+                        string last = Model.Series[Model.Series.Count - 1].Title;
+
+
+                        series.Points2.AddRange(data[last].ToArray().Select((x, i) => new DataPoint(i, x)));
+                    }
                     Model.Series.Add(series);
                     Dispatcher.InvokeAsync(() =>
                     {
